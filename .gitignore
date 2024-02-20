@@ -1,0 +1,4 @@
+/package/backend/build/*
+/package/backend/test/*
+/package/backend/congig.json
+/server
