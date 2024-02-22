@@ -1,35 +1,52 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
+import cookie from '../scripts/cookie';
+import router from '../router';
+
+
 const board = ref<number[]>([...Array(64)].map(_ => (0)));
+const errList = inject<Err[]>('errList');
 const Myturn = ref<boolean>(false);
 
-const roomId = 'LSQU628BFR';
-const playerId = 'LSQU628BJC';
-const ws = new WebSocket(`wss://reversi.kawaii-music.xyz/api/stream?roomId=${roomId}&playerId=${playerId}`);
+const roomId = cookie.read('roomId');
+const playerId = cookie.read('playerId');
 
-ws.addEventListener('open', () => {
-  ws.send(JSON.stringify({
-    type: "connection",
-  }))
-});
+if (roomId && playerId) {
+  const ws = new WebSocket(`wss://reversi.kawaii-music.xyz/api/stream?roomId=${roomId}&playerId=${playerId}`);
 
-ws.addEventListener('message', (e) => {
-  const msg = JSON.parse(e.data);
-  switch (msg.type) {
-    case 'start':
-      board.value = msg.body.board ?? board.value;
-      Myturn.value = msg.body.yourTurn ?? false;
-      break;
-    case 'put':
-      board.value = msg.body.board ?? board.value;
-      break;
-    case 'end':
-      ws.close();
-      break;
-    default:
-      break
-  }
-});
+  ws.addEventListener('open', () => {
+    ws.send(JSON.stringify({
+      type: "connection",
+    }))
+  });
+
+  ws.addEventListener('message', (e) => {
+    const msg = JSON.parse(e.data);
+    switch (msg.type) {
+      case 'start':
+        board.value = msg.body.board ?? board.value;
+        Myturn.value = msg.body.yourTurn ?? false;
+        break;
+      case 'put':
+        board.value = msg.body.board ?? board.value;
+        break;
+      case 'end':
+        ws.close();
+        break;
+      default:
+        break
+    }
+  });
+} else { 
+  errList?.push({
+    title: 'Failed to read cookie.',
+    msg: 'It will return to the title in a few seconds.'
+  });
+  setTimeout(() => {
+    router.push('/');
+  }, 2000);
+}
+
 
 const putStone = (p: number) => {
   if (ws.readyState == 1) { 
