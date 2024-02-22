@@ -1,4 +1,5 @@
 /package/backend/build/*
+/package/backend/public/*
 /package/backend/test/*
 /package/backend/congig.json
 /server
