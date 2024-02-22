@@ -23,7 +23,7 @@
       "session_same_site" : "Null",
       "session_cookie_key": "JSESSIONID",
       "session_max_age": -1,
-      "document_root": "./",
+      "document_root": "./public",
       "home_page": "index.html",
       "use_implicit_page": true,
       "implicit_page": "index.html",
