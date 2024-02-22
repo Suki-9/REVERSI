@@ -1,13 +1,30 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Ref, ref, inject } from 'vue';
+import router from '../router';
+import cookie from '../scripts/cookie';
+
 const pass = ref<string>('');
-const fetch_API = async (ep: 'create' | 'find') =>
+const errList = inject<Ref<Err[]>>('errList');
+
+const fetch_API = async (ep: 'create' | 'find'): Promise<void> =>
   await fetch(`https://reversi.kawaii-music.xyz/api/${ep}`, {
     method: 'POST',
     body: JSON.stringify({
       pass: pass.value,
     }),
-  }).then(r => r.json()).then(d => d);
+  }).then(async r => {
+    const body = (await r.json());
+    if (r.ok && body) {
+      cookie.write('roomId', body.roomId);
+      cookie.write('playerId', body.playerId);
+      router.push('/play');
+    } else {
+      errList?.value.push({
+        title: `${r.status}`,
+        msg: body.err,
+      });
+    }
+  });
 </script>
 
 <template>
