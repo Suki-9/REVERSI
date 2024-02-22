@@ -3,7 +3,6 @@ import { ref, inject } from 'vue';
 import cookie from '../scripts/cookie';
 import router from '../router';
 
-
 const board = ref<number[]>([...Array(64)].map(_ => (0)));
 const errList = inject<Err[]>('errList');
 const Myturn = ref<boolean>(false);
@@ -11,9 +10,9 @@ const Myturn = ref<boolean>(false);
 const roomId = cookie.read('roomId');
 const playerId = cookie.read('playerId');
 
-if (roomId && playerId) {
-  const ws = new WebSocket(`wss://reversi.kawaii-music.xyz/api/stream?roomId=${roomId}&playerId=${playerId}`);
+const ws = new WebSocket(`wss://reversi.kawaii-music.xyz/api/stream?roomId=${roomId}&playerId=${playerId}`);
 
+if (roomId && playerId) {
   ws.addEventListener('open', () => {
     ws.send(JSON.stringify({
       type: "connection",
@@ -47,7 +46,6 @@ if (roomId && playerId) {
   }, 2000);
 }
 
-
 const putStone = (p: number) => {
   if (ws.readyState == 1) { 
     ws.send(JSON.stringify({
@@ -58,7 +56,6 @@ const putStone = (p: number) => {
     }))
   }
 };
-
 </script>
 
 <template>
