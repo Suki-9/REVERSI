@@ -15,7 +15,7 @@ void api::post_create(
   std::string pass = req->getParameter("pass");
   Json::Value json;
 
-  if (verfy_pass(pass)) {
+  if (verify_pass(pass)) {
     PlayerId playerId = create_id();
     InstanceId instance_id = create_instance(pass, playerId);
     if (instance_id != "") {
@@ -30,9 +30,9 @@ void api::post_create(
     ERR_LOGGER( "API service", "Err -> " << json["err"] );
   }
 
-  auto resp = HttpResponse::newHttpJsonResponse(json);
-  resp->setStatusCode(k200OK);
-  callback(resp);
+  auto res = HttpResponse::newHttpJsonResponse(json);
+  res->setStatusCode(k200OK);
+  callback(res);
 }
 
 void api::post_find(
@@ -42,10 +42,8 @@ void api::post_find(
   Json::Value json;
 
   std::string p[2]{""};
-  int b[64]{0};
 
   Instance instance;
-  instance.board = b;
   instance.player_ids = p;
 
   search_Instance(instance, pass);
