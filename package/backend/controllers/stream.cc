@@ -48,22 +48,25 @@ void WebSocketChat::handleNewMessage(
 
         Json::Value json_res_ = json_res;
         json_res_["body"]["yourTurn"] = true;
-  
+
         instance_state->current_player = instance_state->player_ids[instance_state->current_player == instance_state->player_ids[0]];
 
         int t = 0;
         for (int i = 0; i < 64; i++) {
-          t += json_res_["body"]["board"][i] = verify_put(i, instance_state, instance_state->current_player) ? 3 : instance_state->board[i];
+          t++; 
+          json_res_["body"]["board"][i] = verify_put(i, instance_state, instance_state->current_player) ? 3 : instance_state->board[i];
         }
         if (!t) {
           instance_state->current_player = instance_state->player_ids[instance_state->current_player == instance_state->player_ids[0]];
           t = 0;
           for (int i = 0; i < 64; i++) {
-            t += json_res_["body"]["board"][i] = verify_put(i, instance_state, instance_state->current_player) ? 3 : instance_state->board[i];
+            t++;
+            json_res_["body"]["board"][i] = verify_put(i, instance_state, instance_state->current_player) ? 3 : instance_state->board[i];
           }
           if (!t) {
             for (int i = 0;i < 64; i++) {
-              json_res["body"]["board"][i] += json_res_["body"]["board"][i] = instance_state->board[i];
+              json_res["body"]["board"][i] = instance_state->board[i];
+              json_res_["body"]["board"][i] = instance_state->board[i];
             }
             json_res["type"] = "end";
             json_res_["type"] = "end";

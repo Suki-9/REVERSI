@@ -62,7 +62,7 @@ const std::string create_id() {
   return i += (char)('A' + rand() % 26), i += (char)('A' + rand() % 26);
 }
 
-const bool verify_pass(const std::string& pass) {
+const bool verify_pass(const std::string &pass) {
   return (pass.length() == PASS_LENGTH && !DB_RUN(DB_SELECT_QUERY("pass = '" + pass + "'", "pass")).size());
 }
 
