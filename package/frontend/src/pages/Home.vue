@@ -5,9 +5,9 @@ const fetch_API = async (ep: 'create' | 'find') =>
   await fetch(`https://reversi.kawaii-music.xyz/api/${ep}`, {
     method: 'POST',
     body: JSON.stringify({
-      pass: pass.value.normalize("NFC"),
-    })
-  }).then(r => r.json()).then(d => pass.value = d);
+      pass: pass.value,
+    }),
+  }).then(r => r.json()).then(d => d);
 </script>
 
 <template>
@@ -19,7 +19,7 @@ const fetch_API = async (ep: 'create' | 'find') =>
       type="text"
       placeholder="Please enter any Pass (4 characters)" 
       maxlength="4" 
-      :value="pass"/>
+      v-model="pass"/>
     <div :class="$style.container">
       <a class="button" @click="fetch_API('create')">create</a>
       <a class="button" @click="fetch_API('find')">Join</a>
@@ -35,7 +35,6 @@ fieldset {
 
   border: solid 2px;
 }
-
 .container {
   display: flex;
   align-items: center;
