@@ -15,6 +15,8 @@ void api::post_create(
   std::string pass = req->getParameter("pass");
   Json::Value json;
 
+  std::cout << pass << std::endl;
+
   if (verify_pass(pass)) {
     PlayerId playerId = create_id();
     InstanceId instance_id = create_instance(pass, playerId);
@@ -69,4 +71,3 @@ void api::post_find(
   resp->setStatusCode(k200OK);
   callback(resp);
 }
-

@@ -11,7 +11,7 @@ class api : public drogon::HttpController<api>
     void post_find(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     METHOD_LIST_BEGIN
-    METHOD_ADD(api::post_create, "/create", Post);
-    METHOD_ADD(api::post_find, "/find", Post);
+    METHOD_ADD(api::post_create, "/create", Post, Options);
+    METHOD_ADD(api::post_find, "/find", Post, Options);
     METHOD_LIST_END
 };
