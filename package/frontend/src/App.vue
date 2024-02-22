@@ -1,10 +1,10 @@
-<template>
-  <router-view />
-</template>
+<script setup lang="ts">
+import TopBar from './component/TopBar.vue';
+</script>
 
-<style scoped>
-#app {
-  margin: 0;
-  padding: 0;
-}
-</style>
+<template>
+  <TopBar />
+  <div id="page">
+    <router-view />
+  </div>
+</template>
