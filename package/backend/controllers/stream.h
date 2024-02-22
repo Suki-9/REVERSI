@@ -33,14 +33,14 @@ class WebSocketChat : public drogon::WebSocketController<WebSocketChat>
     ) override;
 
     WS_PATH_LIST_BEGIN
-    WS_PATH_ADD("/stream", Get);
+    WS_PATH_ADD("/api/stream", Get);
     WS_PATH_LIST_END
 
   private:
     PubSubService<std::string> chatRooms_;
-    std::map<std::string, InstanceState> instance_;
+    std::map<std::string, std::shared_ptr<InstanceState>> instance_;
     std::mutex mtx_;
 };
 
-bool verfy_connection(InstanceState &i);
-bool verfy_put();
+bool verify_connection(std::shared_ptr<InstanceState> i);
+bool verify_put();
