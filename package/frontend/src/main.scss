@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200..900&display=swap');
+
+
+body {
+  margin: 0;
+
+  font-family: "Source Sans 3", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+
+  a,
+  p {
+    font-weight: 400;
+    text-decoration: none;
+    color: #000000
+  }
+
+  ;
+
+  h1,
+  h2 {
+    font-weight: 400;
+    margin: 0;
+  }
+
+  ;
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+
+    #page {
+
+      max-width: 900px;
+      width: 90%;
+    }
+  }
+}
+
+.button {
+  border: solid 1.2px;
+  border-radius: 7px;
+  padding: 2px 5px;
+
+  text-align: center;
+  font-size: 1.2rem;
+
+  width: 4rem;
+
+  user-select: none;
+
+  &:hover {
+    transition: background-color 0.2s ease-in-out 0s;
+    background-color: rgba($color: #000000, $alpha: 0.05);
+  }
+
+  &:active {
+    scale: 0.9;
+    background-color: rgba($color: #000000, $alpha: 0.1);
+  }
+}
+
+input[type="text"] {
+  border: solid 0px;
+  border-bottom: solid 1px;
+
+  font-size: 1.4rem;
+  text-align: center;
+
+  width: 80%;
+  margin: 0;
+  padding: 0.2rem;
+
+  &:focus {
+    outline: 0px;
+  }
+
+  &::placeholder {
+    color: #b1b1b1;
+    padding: 0 1rem;
+
+    font-family: "Source Sans 3", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+}
