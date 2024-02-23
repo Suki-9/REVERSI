@@ -6,7 +6,7 @@
     <div :class="$style.r_container">
       <a><span class="material-symbols-outlined">settings</span></a>
       <a><span class="material-symbols-outlined">help</span></a>
-      <a><span class="material-symbols-outlined">code</span></a>
+      <a href="https://github.com/Suki-9/REVERSI"><span class="material-symbols-outlined">code</span></a>
     </div>
   </div>
 </template>
