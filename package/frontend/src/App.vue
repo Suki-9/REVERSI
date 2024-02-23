@@ -12,7 +12,7 @@ watch(errList, () => {
   } else {
     setTimeout(() => {
       errList.value.pop();
-    }, 2000);
+    }, 3000);
   }
 }, { deep: true });
 </script>
