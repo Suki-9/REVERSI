@@ -4,7 +4,7 @@
       <h2>Reversi App</h2>
     </RouterLink>
     <div :class="$style.r_container">
-      <a><span class="material-symbols-outlined">settings</span></a>
+      <RouterLink to="/setting"><span class="material-symbols-outlined">settings</span></RouterLink>
       <a><span class="material-symbols-outlined">help</span></a>
       <a href="https://github.com/Suki-9/REVERSI"><span class="material-symbols-outlined">code</span></a>
     </div>
