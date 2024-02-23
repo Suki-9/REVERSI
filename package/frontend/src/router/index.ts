@@ -13,6 +13,11 @@ const router = createRouter({
       name: "Play",
       component: () => import("../pages/Play.vue"),
     },
+    {
+      path: "/setting",
+      name: "Setting",
+      component: () => import("../pages/Setting.vue"),
+    }
   ]
 });
 
