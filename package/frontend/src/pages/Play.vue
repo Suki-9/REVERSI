@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue';
+import { Ref, ref, inject } from 'vue';
 import cookie from '../scripts/cookie';
 import router from '../router';
 
 const board = ref<number[]>([...Array(64)].map(_ => (0)));
-const errList = inject<Err[]>('errList');
+const errList = inject<Ref<Err[]>>('errList');
 const Myturn = ref<boolean>(false);
 
 const roomId = cookie.read('roomId');
@@ -29,6 +29,12 @@ if (roomId && playerId) {
       case 'put':
         board.value = msg.body.board ?? board.value;
         break;
+      case 'err':
+        errList?.value.push({
+          title: 'WS Err',
+          msg: msg.body.err,
+        });
+        break;
       case 'end':
         ws.close();
         break;
@@ -37,7 +43,7 @@ if (roomId && playerId) {
     }
   });
 } else { 
-  errList?.push({
+  errList?.value.push({
     title: 'Failed to read cookie.',
     msg: 'It will return to the title in a few seconds.'
   });
