@@ -2,8 +2,7 @@
 import { Ref, ref, inject } from 'vue';
 import cookie from '../scripts/cookie';
 import router from '../router';
-//[...Array(64)].map(_ => (0))
-const board = ref<number[]>([1, 2]);
+const board = ref<number[]>([...Array(64)].map(_ => (0)));
 const errList = inject<Ref<Err[]>>('errList');
 const Myturn = ref<boolean>(false);
 
