@@ -12,10 +12,10 @@ const InstanceId create_instance(
   const PlayerId& player
 ) {
   try {
-    std::string p[3]{player, "", create_id()};
+    std::string p[3]{player, create_id(), create_id()};
     DB_RUN_WITH_VALUE(
-      DB_INSERT_QUERY("create_at", "player_ids", /*"board",*/ "pass", "instance_id"),
-      getTimeStamp(), VarConverter::arr2str_string(p, 2), /*VarConverter::arr2str_int(b, 64),*/ pass, p[2]
+      DB_INSERT_QUERY("create_at", "player_ids", "pass", "instance_id"),
+      getTimeStamp(), VarConverter::arr2str_string(p, 2), pass, p[2]
     );
     return p[2];
 
@@ -66,9 +66,25 @@ const bool verify_pass(const std::string &pass) {
   return (pass.length() == PASS_LENGTH && !DB_RUN(DB_SELECT_QUERY("pass = '" + pass + "'", "pass")).size());
 }
 
-const bool verify_instance_id(const std::string& instance_id) {
-  auto rows = DB_RUN(DB_SELECT_QUERY("instance_id = '" + instance_id + "'", "is_matched"));
-  return (rows.size() && rows[0]["is_matched"].as<bool>());
+const bool verify_instance_id(const InstanceId &i) {
+  auto rows = DB_RUN(DB_SELECT_QUERY("instance_id = '" + i + "'", "is_matched"));
+  if (rows.size()) {
+    LOGGER("Game core", "Success verify instance_id.\n  >> instance_id: " << i);
+    return 1;
+  } else {
+    WARN_LOGGER("Game core", "Failed verify instance_id.\n  >> instance_id: " << i);
+    return 0;
+  }
+}
+
+const bool verify_player_id(const PlayerId &p, const std::shared_ptr<InstanceState> i) {
+  if ((p == i->player_ids[0] || p == i->player_ids[1])) {
+    LOGGER("Game core", "Success verify player_id.\n  >> player_id: " << p);
+    return 1;
+  } else {
+    WARN_LOGGER("Game core", "Failed verify player_id.\n  >> player_id: " << p);
+    return 0;
+  }
 }
 
 long int getTimeStamp() {
