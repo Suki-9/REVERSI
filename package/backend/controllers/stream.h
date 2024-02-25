@@ -43,4 +43,3 @@ class WebSocketChat : public drogon::WebSocketController<WebSocketChat>
 };
 
 bool verify_connection(std::shared_ptr<InstanceState> i);
-bool verify_put();
