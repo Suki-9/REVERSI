@@ -25,6 +25,10 @@ if (roomId && playerId) {
         board.value = msg.body.board ?? board.value;
         Myturn.value = msg.body.yourTurn ?? false;
         break;
+      case 'reconnection':
+        board.value = msg.body.board ?? board.value;
+        Myturn.value = msg.body.yourTurn ?? false;
+        break;
       case 'put':
         board.value = msg.body.board ?? board.value;
         break;
@@ -67,7 +71,7 @@ const putStone = (p: number) => {
   <div :class="$style.root">
     <div :class="$style.board">
       <a v-for="(s, i) in board" :class="$style.cell" @click="putStone(i)">
-        <span :class="[{ [$style.brack]: s == 1 }, { [$style.white]: s == 2 }]" v-show="s"></span>
+        <span :class="[{ [$style.brack]: s == 1 }, { [$style.white]: s == 2 }]" v-show="s">{{ s }}</span>
       </a>
     </div>
     <div :class="$style.info">
