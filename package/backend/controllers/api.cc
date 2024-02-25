@@ -25,6 +25,7 @@ void api::post_create(
     InstanceId instance_id = create_instance(pass, playerId);
 
     if (instance_id != "") {
+      LOGGER("[API service]" , "create Instance id -> " << instance_id);
       json_res["roomId"] = instance_id;
       json_res["playerId"] = playerId;
     } else {
@@ -52,7 +53,6 @@ void api::post_find(
   std::string pass = json_req["pass"].asCString();
 
   bool is_err = false;
-
   std::string p[2]{""};
 
   Instance instance;
@@ -63,14 +63,10 @@ void api::post_find(
   LOGGER("API service", "Search request. (pass=" << pass  << ")");
 
   if (instance.instance_id != "" && !(instance.is_matched)) {
-    instance.player_ids[1] = create_id();
     json_res["playerId"] = instance.player_ids[1];
     json_res["roomId"] = instance.instance_id;
 
-    DB_RUN_WITH_VALUE(
-      DB_UPDATE_QUERY("pass = '" + pass + "'", "player_ids", "is_matched"),
-      VarConverter::arr2str_string(instance.player_ids, 2), true
-    );
+    DB_RUN_WITH_VALUE(DB_UPDATE_QUERY("pass = '" + pass + "'", "is_matched"), true);
 
   } else {
     is_err = true;
