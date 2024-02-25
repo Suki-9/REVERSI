@@ -2,8 +2,8 @@
 import { Ref, ref, inject } from 'vue';
 import cookie from '../scripts/cookie';
 import router from '../router';
-
-const board = ref<number[]>([...Array(64)].map(_ => (0)));
+//[...Array(64)].map(_ => (0))
+const board = ref<number[]>([1, 2]);
 const errList = inject<Ref<Err[]>>('errList');
 const Myturn = ref<boolean>(false);
 
@@ -42,7 +42,7 @@ if (roomId && playerId) {
         break
     }
   });
-} else { 
+} else {
   errList?.value.push({
     title: 'Failed to read cookie.',
     msg: 'It will return to the title in a few seconds.'
@@ -53,7 +53,7 @@ if (roomId && playerId) {
 }
 
 const putStone = (p: number) => {
-  if (ws.readyState == 1) { 
+  if (ws.readyState == 1) {
     ws.send(JSON.stringify({
       type: 'put',
       body: {
@@ -67,17 +67,9 @@ const putStone = (p: number) => {
 <template>
   <div :class="$style.root">
     <div :class="$style.board">
-      <a 
-        v-for="(s, i) in board" 
-        :class="$style.cell" 
-        v-text="s 
-          ? s == 1
-            ? '!'
-            : s == 2
-              ? '?'
-              : '&'
-          : ''"
-        @click="putStone(i)"></a>
+      <a v-for="(s, i) in board" :class="$style.cell" @click="putStone(i)">
+        <span :class="[{ [$style.brack]: s == 1 }, { [$style.white]: s == 2 }]" v-show="s"></span>
+      </a>
     </div>
     <div :class="$style.info">
       <p>あなた: </p>
@@ -107,6 +99,10 @@ const putStone = (p: number) => {
     max-width: 85vh;
 
     .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       border-radius: 3px;
       transition: background-color 0.4s ease-in-out 0s;
       background-color: rgba(0, 218, 0, 0.4);
@@ -125,7 +121,19 @@ const putStone = (p: number) => {
         scale: 0.9;
       }
 
-      &::before {}
+      span {
+        display: block;
+
+        height:85%;
+        width: 85%;
+
+        border-radius: 50%;
+        content: "";
+        user-select: none;
+
+        &.brack {  background-color: rgb(0, 0, 0);}
+        &.white  { background-color: rgb(255,255,255);}
+      }
     }
   }
 
