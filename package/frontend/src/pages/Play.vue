@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue';
+import ResultCard from '../component/ResultCard.vue';
+
+import { Ref, ref, inject } from 'vue';
 import cookie from '../scripts/cookie';
 import router from '../router';
 
 const board = ref<number[]>([...Array(64)].map(_ => (0)));
-const errList = inject<Err[]>('errList');
-const Myturn = ref<boolean>(false);
+const errList = inject<Ref<Err[]>>('errList');
+const i = ref<number>();
+
+const result = ref<boolean>();
 
 const roomId = cookie.read('roomId');
 const playerId = cookie.read('playerId');
+const placed = ref<number[]>([0, 0]);
 
 const ws = new WebSocket(`wss://reversi.kawaii-music.xyz/api/stream?roomId=${roomId}&playerId=${playerId}`);
 
@@ -21,23 +26,36 @@ if (roomId && playerId) {
 
   ws.addEventListener('message', (e) => {
     const msg = JSON.parse(e.data);
+    console.log(msg);
     switch (msg.type) {
       case 'start':
-        board.value = msg.body.board ?? board.value;
-        Myturn.value = msg.body.yourTurn ?? false;
+        i.value = msg.body.yourNum;
+        updateBoard(msg.body);
+        break;
+      case 'reconnection':
+        i.value = msg.body.yourNum;
+        updateBoard(msg.body);
         break;
       case 'put':
-        board.value = msg.body.board ?? board.value;
+        updateBoard(msg.body)
         break;
-      case 'end':
+      case 'err':
+        errList?.value.push({
+          title: 'WS Err',
+          msg: msg.body.err,
+        });
+        break;
+      case 'gameSet':
+        updateBoard(msg.body);
+        result.value = msg.body.win;
         ws.close();
         break;
       default:
         break
     }
   });
-} else { 
-  errList?.push({
+} else {
+  errList?.value.push({
     title: 'Failed to read cookie.',
     msg: 'It will return to the title in a few seconds.'
   });
@@ -47,7 +65,7 @@ if (roomId && playerId) {
 }
 
 const putStone = (p: number) => {
-  if (ws.readyState == 1) { 
+  if (ws.readyState == 1) {
     ws.send(JSON.stringify({
       type: 'put',
       body: {
@@ -56,28 +74,29 @@ const putStone = (p: number) => {
     }))
   }
 };
+
+const updateBoard = (body: any): void => {
+  if (i.value && body.board) {
+    board.value = body.board;
+    placed.value = board.value.reduce((a: number[], c: number) => [a[0] + ((c == i.value) ? 1 : 0), a[1] + ((c && c != 3 && c != i.value) ? 1 : 0)], [0, 0]);
+  }
+}
 </script>
 
 <template>
   <div :class="$style.root">
+    <p v-if="i">あなたは {{ i - 1 ? "白" : "黒" }} です。</p>
     <div :class="$style.board">
-      <a 
-        v-for="(s, i) in board" 
-        :class="$style.cell" 
-        v-text="s 
-          ? s == 1
-            ? '!'
-            : s == 2
-              ? '?'
-              : '&'
-          : ''"
-        @click="putStone(i)"></a>
+      <a v-for="(s, i) in board" :class="$style.cell" @click="putStone(i)">
+        <span :class="[{ [$style.brack]: s == 1 }, { [$style.white]: s == 2 }, {[$style.placeable]: s == 3}]" v-show="s">{{ s }}</span>
+      </a>
     </div>
     <div :class="$style.info">
-      <p>あなた: </p>
-      <p>あいて: </p>
+      <p>あなた: {{ placed[0] }}</p>
+      <p>あいて: {{ placed[1] }}</p>
     </div>
   </div>
+  <ResultCard v-if="result !== undefined" :isWin="result" :count="placed" />
 </template>
 
 <style module lang="scss">
@@ -87,6 +106,10 @@ const putStone = (p: number) => {
   align-items: center;
 
   width: 100%;
+
+  p {
+    margin: 0;
+  }
 
   .board {
     display: grid;
@@ -101,6 +124,10 @@ const putStone = (p: number) => {
     max-width: 85vh;
 
     .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       border-radius: 3px;
       transition: background-color 0.4s ease-in-out 0s;
       background-color: rgba(0, 218, 0, 0.4);
@@ -119,7 +146,21 @@ const putStone = (p: number) => {
         scale: 0.9;
       }
 
-      &::before {}
+      span {
+        display: block;
+
+        height:85%;
+        width: 85%;
+
+        border-radius: 50%;
+        content: "";
+        user-select: none;
+
+        &.brack {  background-color: rgb(0, 0, 0);}
+        &.white  { background-color: rgb(255,255,255);}
+
+        &.placeable { border: dotted 3px; }
+      }
     }
   }
 

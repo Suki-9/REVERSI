@@ -25,6 +25,9 @@ const fetch_API = async (ep: 'create' | 'find'): Promise<void> =>
       });
     }
   });
+
+cookie.delete('playerId');
+cookie.delete('roomId');
 </script>
 
 <template>
