@@ -1,28 +1,19 @@
-#include <iostream>
-#include <compare>
-
 #include "api.h"
-
-/* ----- use modules include -----*/
-#include "../modules/logger_module.h"
-#include "json_module.h"
-#include "game_core_module.h"
-#include "db_module.h"
 
 
 void api::post_create(
   const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback
 ) {
-  Json::Value json_res;
-  Json::Value json_req;
-  json_parse(json_req, std::string(req->body()));
-  std::string pass = json_req["pass"].asCString();
-
   bool is_err = false;
+  Json::Value json_req;
+  Json::Value json_res;
+  json_parse(json_req, std::string(req->body()));
 
-  if (verify_pass(pass)) {
-    PlayerId playerId = create_id();
-    InstanceId instance_id = create_instance(pass, playerId);
+  const std::string pass = json_req["pass"].asCString();
+
+  if (Verify::pass(pass)) {
+    const PlayerId playerId = create_id();
+    const InstanceId instance_id = InstanceOperator::create(pass, playerId);
 
     if (instance_id != "") {
       LOGGER("[API service]" , "create Instance id -> " << instance_id);
@@ -50,7 +41,7 @@ void api::post_find(
   Json::Value json_res;
   Json::Value json_req;
   json_parse(json_req, std::string(req->body()));
-  std::string pass = json_req["pass"].asCString();
+  const std::string pass = json_req["pass"].asCString();
 
   bool is_err = false;
   std::string p[2]{""};
@@ -58,7 +49,7 @@ void api::post_find(
   Instance instance;
   instance.player_ids = p;
 
-  search_Instance(instance, pass);
+  InstanceOperator::search(instance, pass);
 
   LOGGER("API service", "Search request. (pass=" << pass  << ")");
 
@@ -67,7 +58,6 @@ void api::post_find(
     json_res["roomId"] = instance.instance_id;
 
     DB_RUN_WITH_VALUE(DB_UPDATE_QUERY("pass = '" + pass + "'", "is_matched"), true);
-
   } else {
     is_err = true;
     json_res["err"] = "Your request pass is Not found";

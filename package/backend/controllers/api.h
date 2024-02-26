@@ -1,6 +1,14 @@
 #pragma once
 
 #include <drogon/HttpController.h>
+#include <iostream>
+#include <compare>
+
+/* ----- use modules include -----*/
+#include "../modules/logger_module.h"
+#include "json_module.h"
+#include "game_core_module.h"
+#include "db_module.h"
 
 using namespace drogon;
 

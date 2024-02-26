@@ -1,7 +1,4 @@
-#include <drogon/drogon.h>
-
-/* ----- use modules include -----*/
-#include "logger_module.h"
+#include "json_module.h"
 
 Json::Value* json_parse(Json::Value &root, const std::string &message) {
   try {

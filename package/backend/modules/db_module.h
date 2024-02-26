@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cmath>
+#include <drogon/drogon.h>
+
 /* ----- constant declaration ----- */
 #define TABLE_NAME "game_instance"
 

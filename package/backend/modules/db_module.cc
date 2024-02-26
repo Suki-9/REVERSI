@@ -1,6 +1,3 @@
-#include <cmath>
-#include <drogon/drogon.h>
-
 #include "db_module.h"
 
 std::string ArgsModifier::join(std::vector<std::string> &v) {

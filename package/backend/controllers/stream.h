@@ -4,8 +4,13 @@
 #include <drogon/PubSubService.h>
 #include <drogon/HttpAppFramework.h>
 #include <mutex>
+#include <map>
 
+/* ----- use modules include -----*/
 #include "game_core_module.h"
+#include "json_module.h"
+#include "db_module.h"
+#include "logger_module.h"
 
 using namespace drogon;
 
@@ -32,6 +37,8 @@ class WebSocketChat : public drogon::WebSocketController<WebSocketChat>
       const WebSocketConnectionPtr &
     ) override;
 
+    bool verify_connection(std::shared_ptr<InstanceState> i);
+
     WS_PATH_LIST_BEGIN
     WS_PATH_ADD("/api/stream", Get);
     WS_PATH_LIST_END
@@ -42,4 +49,4 @@ class WebSocketChat : public drogon::WebSocketController<WebSocketChat>
     std::mutex mtx_;
 };
 
-bool verify_connection(std::shared_ptr<InstanceState> i);
+
