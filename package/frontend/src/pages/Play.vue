@@ -1,13 +1,19 @@
 <script setup lang="ts">
+import ResultCard from '../component/ResultCard.vue';
+
 import { Ref, ref, inject } from 'vue';
 import cookie from '../scripts/cookie';
 import router from '../router';
+
 const board = ref<number[]>([...Array(64)].map(_ => (0)));
 const errList = inject<Ref<Err[]>>('errList');
-const Myturn = ref<boolean>(false);
+const i = ref<number>();
+
+const result = ref<boolean>();
 
 const roomId = cookie.read('roomId');
 const playerId = cookie.read('playerId');
+const placed = ref<number[]>([0, 0]);
 
 const ws = new WebSocket(`wss://reversi.kawaii-music.xyz/api/stream?roomId=${roomId}&playerId=${playerId}`);
 
@@ -20,17 +26,18 @@ if (roomId && playerId) {
 
   ws.addEventListener('message', (e) => {
     const msg = JSON.parse(e.data);
+    console.log(msg);
     switch (msg.type) {
       case 'start':
-        board.value = msg.body.board ?? board.value;
-        Myturn.value = msg.body.yourTurn ?? false;
+        i.value = msg.body.yourNum;
+        updateBoard(msg.body);
         break;
       case 'reconnection':
-        board.value = msg.body.board ?? board.value;
-        Myturn.value = msg.body.yourTurn ?? false;
+        i.value = msg.body.yourNum;
+        updateBoard(msg.body);
         break;
       case 'put':
-        board.value = msg.body.board ?? board.value;
+        updateBoard(msg.body)
         break;
       case 'err':
         errList?.value.push({
@@ -38,7 +45,9 @@ if (roomId && playerId) {
           msg: msg.body.err,
         });
         break;
-      case 'end':
+      case 'gameSet':
+        updateBoard(msg.body);
+        result.value = msg.body.win;
         ws.close();
         break;
       default:
@@ -65,20 +74,29 @@ const putStone = (p: number) => {
     }))
   }
 };
+
+const updateBoard = (body: any): void => {
+  if (i.value && body.board) {
+    board.value = body.board;
+    placed.value = board.value.reduce((a: number[], c: number) => [a[0] + ((c == i.value) ? 1 : 0), a[1] + ((c && c != 3 && c != i.value) ? 1 : 0)], [0, 0]);
+  }
+}
 </script>
 
 <template>
   <div :class="$style.root">
+    <p v-if="i">あなたは {{ i - 1 ? "白" : "黒" }} です。</p>
     <div :class="$style.board">
       <a v-for="(s, i) in board" :class="$style.cell" @click="putStone(i)">
-        <span :class="[{ [$style.brack]: s == 1 }, { [$style.white]: s == 2 }]" v-show="s">{{ s }}</span>
+        <span :class="[{ [$style.brack]: s == 1 }, { [$style.white]: s == 2 }, {[$style.placeable]: s == 3}]" v-show="s">{{ s }}</span>
       </a>
     </div>
     <div :class="$style.info">
-      <p>あなた: </p>
-      <p>あいて: </p>
+      <p>あなた: {{ placed[0] }}</p>
+      <p>あいて: {{ placed[1] }}</p>
     </div>
   </div>
+  <ResultCard v-if="result !== undefined" :isWin="result" :count="placed" />
 </template>
 
 <style module lang="scss">
@@ -88,6 +106,10 @@ const putStone = (p: number) => {
   align-items: center;
 
   width: 100%;
+
+  p {
+    margin: 0;
+  }
 
   .board {
     display: grid;
@@ -136,6 +158,8 @@ const putStone = (p: number) => {
 
         &.brack {  background-color: rgb(0, 0, 0);}
         &.white  { background-color: rgb(255,255,255);}
+
+        &.placeable { border: dotted 3px; }
       }
     }
   }
